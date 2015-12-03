@@ -1,14 +1,14 @@
-# lua_uuid
+# lua_ip
 
-Lua library that generate UUIDs leveraging [libuuid](http://linux.die.net/man/3/libuuid).
+Lua utility library for IPs.
 
 ## Usage
 
-To generate a new UUID string:
+To retrieve the first, non-loopback, IPv4 IP address on the system:
 
 ```lua
-local uuid = require "lua_uuid"
-local uuid_str = uuid()
+local ip_utils = require "lua_ip"
+local ip_str = ip_utils.get_ip()
 
-print("New UUID: "..uuid_str)
+print("IP address: "..ip_str)
 ```
