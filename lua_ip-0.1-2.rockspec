@@ -1,8 +1,8 @@
 package = "lua_ip"
-version = "0.1-1"
+version = "0.1-2"
 source = {
-  url = "https://github.com/Mashape/lua-ip/archive/0.1-1.tar.gz",
-  dir = "lua-ip-0.1-1"
+  url = "https://github.com/Mashape/lua-ip/archive/0.1-2.tar.gz",
+  dir = "lua-ip-0.1-2"
 }
 description = {
   summary = "IP utils",

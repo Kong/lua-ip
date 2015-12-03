@@ -22,35 +22,48 @@ Generic IP utilities.
 /// Retrieve the first active non loopback IPv4 address
 // @return ip_str
 // @function get_ip()
-static int get_ip(lua_State *L) {
+static int get_ipv4(lua_State *L) {
   struct ifaddrs * ifAddrStruct=NULL;
   struct ifaddrs * ifa=NULL;
   void * tmpAddrPtr=NULL;
 
   getifaddrs(&ifAddrStruct);
 
+  const char * interface = lua_tostring(L, 1);
+
+  int found = 0;
+
   for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
     if (!ifa->ifa_addr) {
       continue;
     }
 
-    if ((ifa->ifa_flags & IFF_UP) == 0) continue; // Should be running
-    if ((ifa->ifa_flags & IFF_LOOPBACK) != 0) continue; // Should not be loopback
+    if (!interface || strcmp(interface, ifa->ifa_name) == 0) {
+      if ((ifa->ifa_flags & IFF_UP) == 0) continue; // Should be running
+      if ((ifa->ifa_flags & IFF_LOOPBACK) != 0) continue; // Should not be loopback
 
-    if (ifa->ifa_addr->sa_family == AF_INET) { // Should be IPv4
-      tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
-      char addressBuffer[INET_ADDRSTRLEN];
-      inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-      lua_pushstring(L, addressBuffer);
-      break;
+      if (ifa->ifa_addr->sa_family == AF_INET) { // Should be IPv4
+        tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+        char addressBuffer[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+        
+        lua_pushstring(L, addressBuffer);
+        found = 1;
+        break;
+      }
     }
   }
+
+  if (!found) {
+    lua_pushstring(L, NULL);
+  }
+
   if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
   return 1;
 }
 
 static const luaL_Reg lua_ip[] = {
-  {"get_ip", get_ip},
+  {"get_ipv4", get_ipv4},
   {NULL, NULL}
 };
 
